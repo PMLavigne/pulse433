@@ -1,6 +1,7 @@
 {
   "name": "pulse433",
   "description": "Encode and transmit digital pulse-width modulated 433MHz signals found in cheap radio-controlled things",
+  "keywords": "transmit, transmitter, 433Mhz, radio, remote, encoder",
   "authors": [
     {
       "name": "Patrick Lavigne",
