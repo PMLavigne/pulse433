@@ -19,7 +19,7 @@
     "include": "src/"
   },
   "frameworks": "arduino",
-  "platforms": "atmelavr",
+  "platforms": "*",
   "build": {
     "flags": [
       "-Wall",
