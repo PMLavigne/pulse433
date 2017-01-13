@@ -1,0 +1,22 @@
+{
+  "name": "pulse433",
+  "description": "Encode and transmit digital pulse-width modulated 433MHz signals found in cheap radio-controlled things",
+  "authors": [
+    {
+      "name": "Patrick Lavigne",
+      "email": "me@patrick.codes",
+      "maintainer": true
+    }
+  ],
+  "version": "0.0.1",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PMLavigne/pulse433.git"
+  },
+  "export": {
+    "include": "src/"
+  },
+  "frameworks": "arduino",
+  "platforms": "atmelavr"
+}
