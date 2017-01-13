@@ -18,5 +18,12 @@
     "include": "src/"
   },
   "frameworks": "arduino",
-  "platforms": "atmelavr"
+  "platforms": "atmelavr",
+  "build": {
+    "flags": [
+      "-Wall",
+      "-Wextra",
+      "-O2"
+    ]
+  }
 }
