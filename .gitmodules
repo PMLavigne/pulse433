@@ -1,3 +1,9 @@
 [submodule "external/Unity"]
 	path = external/Unity
 	url = https://github.com/ThrowTheSwitch/Unity.git
+[submodule "cmake/cmake-avr"]
+	path = cross/avr/cmake
+	url = https://github.com/mkleemann/cmake-avr.git
+[submodule "external/toolchain"]
+	path = external/avr-tools
+	url = git@github.com:PMLavigne/avr-tools.git

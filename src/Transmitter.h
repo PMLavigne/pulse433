@@ -1,16 +1,12 @@
 #ifndef PULSE433_TRANSMITTER_H
 #define PULSE433_TRANSMITTER_H
 
-#define PULSE433_TRANSMITTER_BUFF_MAX_SIZE 32
-#define PULSE433_TRANSMITTER_BITS_PER_BYTE 8
-
-#define PULSE433_TRANSMITTER_TICKS_PER_SHORT_PULSE 1
-#define PULSE433_TRANSMITTER_TICKS_PER_LONG_PULSE 4
-#define PULSE433_TRANSMITTER_TICKS_PER_START_PULSE 8
+#include <string.h>
+#include "defines.h"
 
 namespace Pulse433 {
 
-    enum class TransmissionState {
+    enum class TransmissionState : unsigned char {
         Off,
         Start,
         Zero,
@@ -23,18 +19,19 @@ namespace Pulse433 {
     private:
         TransmissionState state;
 
-        TransmitFunc transmitFunction;
+        TransmitFunc & transmitFunction;
 
-        unsigned char tickCount = 0;
+        PULSE433_SIZE_T tickCount = 0;
 
-        unsigned char buff[PULSE433_TRANSMITTER_BUFF_MAX_SIZE];
-        unsigned char buffPos = 0;
-        unsigned char buffBytePos = 0;
-        unsigned char buffLength = 0;
+        PULSE433_BYTE_T buff[PULSE433_TRANSMITTER_BUFF_MAX_SIZE];
+        PULSE433_SIZE_T buffPos = 0;
+        PULSE433_SIZE_T buffBytePos = 0;
+        PULSE433_SIZE_T buffLength = 0;
 
         void nextState() {
-            this->tickCount = 0;
-            if (this->buffBytePos == PULSE433_TRANSMITTER_BITS_PER_BYTE) {
+            // Reset this to one, since whenever nextState() is called one tick has already passed
+            this->tickCount = 1;
+            if (this->buffBytePos == PULSE433_BITS_PER_BYTE) {
                 this->buffBytePos = 0;
                 this->buffPos++;
                 if (this->buffPos == this->buffLength) {
@@ -45,7 +42,7 @@ namespace Pulse433 {
 
             // Get the current byte to work on, then extract the bit we're processing right now. Bits are read left to right
             const bool curBit =
-                (this->buff[this->buffPos] & (1 << ((PULSE433_TRANSMITTER_BITS_PER_BYTE - 1) - this->buffBytePos))) != 0;
+                (this->buff[this->buffPos] & (1 << ((PULSE433_BITS_PER_BYTE - 1) - this->buffBytePos))) != 0;
 
             if (curBit) {
                 this->state = TransmissionState::One;
@@ -58,7 +55,7 @@ namespace Pulse433 {
 
     public:
 
-        Transmitter(TransmitFunc transmitFunc) : transmitFunction(transmitFunc) {
+        Transmitter(TransmitFunc &transmitFunc) : transmitFunction(transmitFunc) {
             this->reset();
         }
 
@@ -70,20 +67,34 @@ namespace Pulse433 {
             return this->state;
         }
 
-        unsigned char getTickCount() const {
+        PULSE433_SIZE_T getTickCount() const {
             return this->tickCount;
         }
 
-        unsigned char getBuffPos() const {
+        PULSE433_SIZE_T getBuffPos() const {
             return this->buffPos;
         }
 
-        unsigned char getBuffBytePos() const {
+        PULSE433_SIZE_T getBuffBytePos() const {
             return this->buffBytePos;
         }
 
-        unsigned char getBuffLength() const {
+        PULSE433_SIZE_T getBuffLength() const {
             return this->buffLength;
+        }
+
+        bool transmitData(const PULSE433_BYTE_T * data, const PULSE433_SIZE_T size) {
+            if(this->isBusy()) {
+                return false;
+            }
+
+            if(size > PULSE433_TRANSMITTER_BUFF_MAX_SIZE) {
+                return false;
+            }
+
+            memcpy(this->buff, data, size);
+            this->buffLength = size;
+            return true;
         }
 
         void reset() {
