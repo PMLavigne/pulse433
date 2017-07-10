@@ -1,18 +1,29 @@
-add_executable(pulse433_TestTransmitter
-    TestTransmitter.cpp
-)
 
-target_include_directories(pulse433_TestTransmitter PUBLIC
-    "${CMAKE_SOURCE_DIR}/config"
+function(add_native_test_build testName)
+
+    set(TEST_TARGET_NAME "${PROJECT_NAME}-test-${testName}")
+
+    add_executable(${TEST_TARGET_NAME}
+        ${testName}.cpp
     )
 
-target_link_libraries(pulse433_TestTransmitter pulse433 Unity)
-target_compile_features(pulse433_TestTransmitter PUBLIC
-    cxx_auto_type
-    cxx_trailing_return_types
-    cxx_return_type_deduction
-    cxx_binary_literals
-)
+    target_include_directories(${TEST_TARGET_NAME} PUBLIC
+        "${CMAKE_SOURCE_DIR}/config"
+        )
 
-add_test(TestTransmitter pulse433_TestTransmitter)
+    target_link_libraries(${TEST_TARGET_NAME} ${PROJECT_NAME} Unity)
 
+    target_compile_features(${TEST_TARGET_NAME} PUBLIC
+        cxx_auto_type
+        cxx_trailing_return_types
+        cxx_return_type_deduction
+        cxx_binary_literals
+    )
+
+    add_test(${testName} ${TEST_TARGET_NAME})
+
+endfunction()
+
+foreach(testName IN ITEMS ${TEST_LIST})
+    add_native_test_build(${testName})
+endforeach()
